@@ -10,42 +10,67 @@ int main(){
 
     struct NETWORK* net[networks];
     for(int i=0; i<networks; i++){
-        net[i] = network_Setup(10, 3, 3, 2);
+        net[i] = network_Setup(10000, 10, 3, 3);
     }
 
 
     float total_best = 1000.0f;
-    for(int i=0; i<1000; i++){
-        float best_score = 1000.0f;
+    for(int i=0; i<10000; i++){
+        float best_score = 0.0f;
         float avg_score = 0.0f;
-        int best_index;
+        int best_index = -1;
+        int failcnt = 0;
         for(int j=0; j<networks; j++){
-            for(int l=0; l<3; l++){
-                *(net[j]->inj_s[l]) = 3.0f;
-            }
-            float score = fabs(2.0f - sin(fabs(network_run(net[j],100))));
 
-            if(avg_score == 0.0f){
-                avg_score = score;
+            //execute the network
+
+            float input = (float) rand() / (float) RAND_MAX;
+
+            for(int l=0; l < net[j]->inj_Count; l++){
+                *(net[j]->inj_s[l]) = input;
+            }
+            float batchEnergy = network_run(net[j],1000);
+            float score = fabs(sinf(input) - net[j]->ext_s[0]);
+
+
+            //make shure we dont have any braindead ones
+            if(batchEnergy <= 0.1f){ //I hate floats
+                score = -1.0f;
+                failcnt ++;
             }else{
-                avg_score = (avg_score + score) / 2;
+                avg_score += score;
             }
 
-            if(score < best_score){
+
+            //printf("batch energy: %f error: %f \n", batchEnergy, score);
+            
+
+            //check for a new best
+            if(score < best_score && score >= 0 || best_index == -1 && score >= 0){
                 best_score = score;
                 best_index = j;
             }
-
-            if(score < total_best){
+            if(score < total_best && score >= 0 ){
                 total_best = score;
             }
 
         }
-        for(int l=0; l<networks; l++){
-            network_mutate(net[best_index],net[l],0.05f);
+        avg_score /= networks - failcnt;
+
+        if(best_index == -1) {
+            best_index = 0;
+            printf("ALL NETWORKS FAILED!!\n");
         }
-        //printf("%f %f %f %d\n",best_score, avg_score, total_best, best_index);
-        printf("%f %f %f\n",best_score, avg_score, total_best);
+
+
+        for(int l=0; l<networks; l++){
+            if(l == best_index) continue;
+            network_mutate(net[best_index],net[l],0.0005f);
+        }
+
+
+        printf("Best: %f AVG: %f Total Best: %f Best: %d Fucked: %d\n",best_score, avg_score, total_best, best_index, failcnt);
+        //printf("%f %f %f\n",best_score, avg_score, total_best);
         cvs_add_line(best_score, avg_score, total_best);
         //printf("%f %f\n",best_score, avg_score);
         //printf("%f\n",best_score);
