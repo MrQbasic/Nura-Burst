@@ -4,23 +4,23 @@ BIN_DIR = ./bin
 LIB_DIR = ./lib
 BUILD_DIR = ./build
 #COMPILER + FLAGS
-GCC        = gcc
-GCC_FLAGAS = -I $(LIB_DIR)/
+GPP        = g++
+GPP_FLAGAS = -lglfw -lGL -I $(LIB_DIR)/
 #FILES
-C_FILES = $(wildcard $(SRC_DIR)/*.c)
-H_FILES = $(wildcard $(LIB_DIR)/*.h)
-O_FILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(C_FILES))
+CPP_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+HPP_FILES = $(wildcard $(LIB_DIR)/*.hpp)
+O_FILES = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(C_FILES))
 EXE_FILE = $(BIN_DIR)/burst
 
 #FINAL COMPILE / LINK
 all: $(EXE_FILE)
 
 $(EXE_FILE): $(O_FILES)
-	$(GCC) $(GCC_FLAGAS) -lm -o $@ $^
+	$(GPP) $(GCC_FLAGAS) -lm -o $@ $^
 
 #COMPILE C FILES
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
-	$(GCC) $(GCC_FLAGAS) -c -o $@ $^
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(GPP) $(GPP_FLAGAS) -c -o $@ $^
 
 
 

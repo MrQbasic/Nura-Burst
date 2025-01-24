@@ -1,16 +1,27 @@
-#include <stdio.h>
-#include <math.h>
+//#include <stdio.h>
+//#include <math.h>
 
-#include "../lib/csv.h"
-#include "../lib/Network.h"
+//#include "../lib/csv.h"
+//#include "../lib/Network.h"
 
-#define networks 100
+//#define networks 100
 
+#include<gui/gui.hpp>
+
+int main() {
+    setupGui();
+
+    while(renderGui());
+}
+
+
+
+/*
 int main(){
 
     struct NETWORK* net[networks];
     for(int i=0; i<networks; i++){
-        net[i] = network_Setup(10000, 10, 3, 3);
+        net[i] = network_Setup(100, 10, 3, 3);
     }
 
 
@@ -78,3 +89,5 @@ int main(){
 
     return 0;
 }
+
+*/

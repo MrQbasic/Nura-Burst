@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 
+
+
 struct NODE{
     float accum;
 
@@ -181,7 +183,7 @@ void network_mutate(struct NETWORK* parent, struct NETWORK* child, float mut){
             }
         }
         if(index == -1){
-            printf("Unexpected error while doing mutation");
+            printf("Unexpected error while doing mutation\n");
         }
         child->inj_s[i] = &(child->node_s[index].accum);
     }
