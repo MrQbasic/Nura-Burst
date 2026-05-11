@@ -1,7 +1,7 @@
 #pragma once
 #include <ImGui/imgui.h>
 
-
+#include <simulation/sim.hpp>
 #include <gui/windows/trainSettings.hpp>
 
 
@@ -21,5 +21,7 @@ void renderMenu(){
     
     if(menuOpen_SimSettings){
         renderWindow_TrainSettings();
+
+        BurstSim::renderSimManagerWindows();
     }
 }

@@ -9,11 +9,10 @@ int sim_nodeCount_normal = 1;
 int sim_subticks = 0;
 float sim_connDensity = 0.5f;
 int sim_networkCount = 1000;
-
-bool sim_isRunning = false;
+bool cpuExecution = false;
 
 void renderWindow_TrainSettings(){
-    ImGui::Begin("Training");
+    ImGui::Begin("New Simulations", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         //Set dimensions of the network
         ImGui::Text("Dimension:");
             ImGui::InputInt("Input  Nodes", &sim_nodeCount_input);
@@ -29,21 +28,13 @@ void renderWindow_TrainSettings(){
             ImGui::InputInt("Subticks", &sim_subticks);
             sim_subticks = sim_subticks < 0 ? 0 : sim_subticks;
             ImGui::InputInt("Network Count", &sim_networkCount);
-            
-            ImGui::BeginDisabled(sim_isRunning);
-            if(ImGui::Button("Start")){
-                //call start
-                BurstSim* sim = new BurstSim(sim_nodeCount_input, sim_nodeCount_output, sim_nodeCount_normal, sim_connDensity, sim_subticks, sim_networkCount);
-                sim_isRunning=true;
-            }
-            ImGui::EndDisabled();
-            ImGui::BeginDisabled(!sim_isRunning);
-            if(ImGui::Button("Stop")){
-                //call start
-                sim_isRunning=false;
-            }
-            ImGui::EndDisabled();
 
+        ImGui::Checkbox("Run on CPU", &cpuExecution);
+
+        if(ImGui::Button("Add")){
+            //call start
+            BurstSim* sim = new BurstSim(sim_nodeCount_input, sim_nodeCount_output, sim_nodeCount_normal, sim_connDensity, sim_subticks, sim_networkCount, cpuExecution);
+        }
 
     ImGui::End();
 }

@@ -1,7 +1,8 @@
 file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
-
 add_library(lBurst ${LIB_SOURCES})
 
 file(GLOB_RECURSE LIB_HEADERS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
 
-target_include_directories(lBurst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(lBurst PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${OpenCL_INCLUDE_DIRS})
+target_compile_definitions(lBurst PUBLIC CL_HPP_TARGET_OPENCL_VERSION=300)
+target_link_libraries(lBurst PUBLIC ${OpenCL_LIBRARIES})
