@@ -152,9 +152,12 @@ void BurstSim::simManagerTask(){
     if(this->runOnCpu){
         std::osyncstream(std::cerr)<< "Sim ID: " << this->id << " -> " << "Started on CPU" << std::endl;
         while(shouldRun){
-            for(int i=0; i<subticks; i++){
+            for(int n=0; n<networks; n++){
+                //injection to the network
+                node_buffer_1[n * ]
+
                 //run per networks
-                for(int n=0; n<networks; n++){
+                for(int i=0; i<subticks; i++){
                     //activation function
                     float exponent = 15.0f; // exponent for the activation function
                     for(int node=0; node<(nodesInput+nodesNormal); node++){
