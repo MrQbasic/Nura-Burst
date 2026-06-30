@@ -5,7 +5,8 @@
 
 class Cell{
 public:
-    Cell(float exponent = 3.0f, float overdrive = 2.0f){
+    Cell(float exponent = 3.0f, float overdrive = 2.0f, bool isDummyCell=false){
+        this->dummyCell = isDummyCell;
         this->input_buffer  = 0.0f;
         this->output_buffer = 0.0f;
         this->overdrive = overdrive;
@@ -20,6 +21,7 @@ public:
 
     //call this to make the cell register its input from the last burst
     void tickCell(){
+        if(dummyCell) return; //don't do the activation function if it's a dummy
         auto[out, inp] = activation_default(input_buffer);
         this->output_buffer = out;
         this->input_buffer = inp;
@@ -33,14 +35,14 @@ public:
         }
     }
 
-
-    void connectInput(Cell* source){
+    void connectInput(Cell* source, float weight){
         this->connection_inputs.push_back(source);
+        this->weights.push_back(weight);
     }
 
 
 public:
-    //output, left over in the input+
+    //output, left over in the input
     std::tuple<float, float> activation_default(float input){
         float activ =  pow(input, this->exponent);
         float newinp = input - activ;
@@ -59,7 +61,10 @@ protected:
     float exponent;
     float overdrive;
 
+    bool dummyCell = false;
+
     //connection between cells
     std::vector<Cell*> connection_inputs;
+    std::vector<float> weights;
 
 };

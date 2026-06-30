@@ -26,10 +26,7 @@ int main(int argc, char *argv[]) {
     }
 
     if(nogui){
-        BurstSim sim(1, 1, 1000, 0.5f, 1000, 1000, true);
-        while(1){
-            
-        }
+
 
     }else{
         setupGui();

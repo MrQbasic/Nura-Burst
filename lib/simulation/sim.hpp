@@ -4,7 +4,7 @@
 #include <vector>
 #include <CL/opencl.hpp>
 #include <iostream>
-#include <simulation/Cell.hpp>
+#include <simulation/Network.hpp>
 
 //data per Node
 typedef struct alignas(16) Node_connection{
@@ -21,7 +21,7 @@ typedef struct Stats_perTick{
 
 class BurstSim{
 public:
-    BurstSim(int nodesInput, int nodesOutput, int nodesNormal, float density, int subticks, int networks, bool runOnCpu=false);
+    BurstSim(const Network_Outline& outline, int networks, bool runOnCpu=false);
 
     //returns true if start was successfull
     bool startSimulation();
@@ -41,14 +41,15 @@ public:
 
 protected:
     //network parameters
+    Network_Outline outline;
     int nodesInput, nodesOutput, nodesNormal, nodesTotal;
     int connectionCount;
-    int networks;
+    int networkCount;
     int subticks;
     int totalTicks = 0;
 
-    //all the nodes
-    std::vector<Cell> cells;
+    //network instances
+    std::vector<Network> networkInstances;
 
     //statistics
     std::vector<Stats_perTick> statistics;

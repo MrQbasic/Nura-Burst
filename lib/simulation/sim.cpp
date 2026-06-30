@@ -11,60 +11,73 @@
 #include <chrono>
 #include <format>
 
-BurstSim::BurstSim(int nodesInput, int nodesOutput, int nodesNormal, float density, int subticks, int networks, bool runOnCpu){
-    //getting the general dimensions of the network
-    this->nodesInput = nodesInput;
-    this->nodesNormal = nodesNormal;
-    this->nodesOutput = nodesOutput;
-    this->nodesTotal = nodesInput + nodesNormal + nodesOutput;
-    this->connectionCount = (int)((float)nodesTotal * density);
-	this->networks = networks;
-    this->id = idCounter; idCounter++;
+BurstSim::BurstSim(const Network_Outline& outline, int networks, bool runOnCpu)
+{
+    this->outline = outline;
+    this->nodesInput = outline.node_count_Input;
+    this->nodesNormal = outline.node_count_Normal;
+    this->nodesOutput = outline.node_count_Output;
+    this->nodesTotal = outline.node_count_Input + outline.node_count_Normal + outline.node_count_Output;
+    this->connectionCount = static_cast<int>(nodesTotal * outline.connection_Density);
+    this->networkCount = networks;
+    this->id = idCounter++;
     this->runOnCpu = runOnCpu;
-    if(subticks < 1){
-        this->subticks = 1;
-    }else{
-        this->subticks = subticks;
-    }
-    //save to simBuffer for keeping track of all sims
-    simulations.push_back(this);
-    //start up the manager task for preperation
-    this->manager = std::thread(&BurstSim::simManagerTask, this);
+    this->subticks = std::max(outline.subticks, 1);
 
+    networkInstances.reserve(networkCount);
+    for (int i = 0; i < networkCount; ++i) {
+        networkInstances.emplace_back(outline);
+    }
+
+    // save to simBuffer for keeping track of all sims
+    simulations.push_back(this);
+    // start up the manager task for preparation
+    this->manager = std::thread(&BurstSim::simManagerTask, this);
 }
 
-bool BurstSim::startSimulation(){
-    if(this->simulationReady){
+bool BurstSim::startSimulation()
+{
+    if (this->simulationReady) {
         this->shouldRun = true;
         return true;
-    }else{
-        return false;
     }
+    return false;
 }
 
-std::string loadKernel(const std::string& path) {
+std::string loadKernel(const std::string& path)
+{
     std::ifstream file(path);
     std::stringstream ss;
     ss << file.rdbuf();
     return ss.str();
 }
 
-void BurstSim::simManagerTask(){
-    //allocate all the Cells
-    for(int i=0; i<this->nodesTotal; i++){
-        Cell c;
-        this->cells.push_back(c);
+void BurstSim::simManagerTask()
+{
+    if (networkInstances.empty()) {
+        this->simulationReady = true;
+        return;
     }
 
-    //connect the cells
-    for(int i=0; i<conn; i++)
+    std::cout << "Networks initialized!" << std::endl;
 
+    // wait for the go
+    this->simulationReady = true;
+    while (!shouldRun) {
+        std::this_thread::yield();
+    }
+    std::cout << "Sim started!" << std::endl;
+
+    // do until the sim is killed
+    while (shouldRun) {
+        std::this_thread::yield();
+    }
 }
 
 void BurstSim::renderSimManagerWindow(){
     bool die = false;
 
-    std::string title = std::format("Simulation  ID: {}", this->id);
+    std::string title = std::format("Simulation  ID: {}##xx", this->id);
     ImGui::Begin(title.c_str(), nullptr, ImGuiWindowFlags_AlwaysAutoResize);
         if(ImGui::BeginTabBar("MainTabBar")){
             if(ImGui::BeginTabItem("General")){
